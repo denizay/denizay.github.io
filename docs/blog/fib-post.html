@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fib</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <nav>
+        <a href="/">← Back to Home</a>
+    </nav>
+
+    <article>
+        <h1>Calculate Fibonacci in Rust -> WASM</h1>
+        <p>
+            Below is a live demonstration using a recursive Fibonacci algorithm running
+            directly in your browser via WebAssembly.
+        </p>
+
+        <div class="card">
+            <h3>Live WASM Demo</h3>
+            <p>Enter a number (try 40) to test the calculation speed.</p>
+
+            <input type="number" id="fib-input" value="10" />
+            <button id="run-btn">Calculate</button>
+
+            <p><strong>Result:</strong> <span id="result">-</span></p>
+            <p><strong>Time:</strong> <span id="timing">-</span></p>
+        </div>
+    </article>
+
+    <script type="module">
+        // Import from the "pkg" folder that handles the glue code
+        // Note: We go up one level (..) because we are inside /blog/
+        import init, { calculate_fib } from '../pkg/rust_engine.js';
+
+        async function run() {
+            // 1. Initialize WASM
+            await init();
+
+            // 2. Set up event listener
+            document.getElementById('run-btn').onclick = () => {
+                const input = parseInt(document.getElementById('fib-input').value);
+                const start = performance.now();
+
+                // 3. CALL RUST
+                const result = calculate_fib(input);
+
+                const end = performance.now();
+
+                // 4. Update UI
+                document.getElementById('result').innerText = result;
+                document.getElementById('timing').innerText = `${(end - start).toFixed(2)}ms`;
+            };
+        }
+
+        run();
+    </script>
+</body>
+
+</html>

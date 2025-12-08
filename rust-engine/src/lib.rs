@@ -21,7 +21,7 @@ fn convert_flat_to_2d(flat_board: &[i8]) -> [[i8; 8]; 8] {
 }
 
 #[wasm_bindgen]
-pub fn get_all_legal_moves(board: &[i8], color_int: i32) -> Vec<usize> {
+pub fn get_all_legal_moves(board: &[i8], color_int: i32, castling_rights: u8) -> Vec<usize> {
     let color = if color_int == 0 {
         chess::pieces::Color::White
     } else {
@@ -30,7 +30,7 @@ pub fn get_all_legal_moves(board: &[i8], color_int: i32) -> Vec<usize> {
 
     let board_2d = convert_flat_to_2d(&board);
 
-    let moves = chess::engine::get_legal_moves(&board_2d, color);
+    let moves = chess::engine::get_legal_moves(&board_2d, color, castling_rights);
 
     let mut flat = Vec::new();
     for ((from_rank, from_file), (to_rank, to_file)) in moves {
@@ -43,7 +43,7 @@ pub fn get_all_legal_moves(board: &[i8], color_int: i32) -> Vec<usize> {
 }
 
 #[wasm_bindgen]
-pub fn get_best_move(board: &[i8], color_int: i32, depth: i32) -> Vec<usize> {
+pub fn get_best_move(board: &[i8], color_int: i32, depth: i32, castling_rights: u8) -> Vec<usize> {
     let color = if color_int == 0 {
         chess::pieces::Color::White
     } else {
@@ -57,7 +57,7 @@ pub fn get_best_move(board: &[i8], color_int: i32, depth: i32) -> Vec<usize> {
         }
     }
 
-    let best_move = chess::engine::get_best_move(&board_2d, color, depth);
+    let best_move = chess::engine::get_best_move(&board_2d, color, depth, castling_rights);
 
     match best_move {
         Some(((from_rank, from_file), (to_rank, to_file))) => {

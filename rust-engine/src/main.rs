@@ -49,12 +49,14 @@ fn main() {
     ];
     print_board(&board);
     let mut color = Color::White;
+    let mut castling_rights = 15; // All rights
     for _ in 0..100 {
-        let best_move = get_best_move(&board, color, 4);
+        let best_move = get_best_move(&board, color, 4, castling_rights);
         match best_move {
             Some(best_move) => {
                 println!("{}", best_move.0 .0);
-                make_move(&mut board, best_move);
+                let (_, new_rights) = make_move(&mut board, best_move, castling_rights);
+                castling_rights = new_rights;
                 print_board(&board);
                 color = get_opponent(color);
             }

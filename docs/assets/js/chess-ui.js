@@ -21,6 +21,11 @@ const BK = -6;  // Black King
 const WHITE = 0;
 const BLACK = 1;
 
+const CASTLE_WK = 1;
+const CASTLE_WQ = 2;
+const CASTLE_BK = 4;
+const CASTLE_BQ = 8;
+
 
 // Mapping internal codes to Unicode
 const PIECES = {
@@ -36,6 +41,7 @@ export class ChessBoard {
         this.selectedSquare = null;
         this.isPlayerTurn = true;
         this.turn = WHITE;
+        this.castlingRights = 15; // 1111 (All rights)
         this.legalMoves = new Map(); // Map<fromIndex, Set<toIndex>>
 
         this.board = [
@@ -64,7 +70,7 @@ export class ChessBoard {
         // Rust side: rank 0 is top (Black), rank 7 is bottom (White)
         // JS side: index = rank * 8 + file
 
-        const movesFlat = get_all_legal_moves(this.board, this.turn);
+        const movesFlat = get_all_legal_moves(this.board, this.turn, this.castlingRights);
 
         for (let i = 0; i < movesFlat.length; i += 4) {
             const fromRank = movesFlat[i];
@@ -135,7 +141,10 @@ export class ChessBoard {
         this.worker.postMessage({
             board: this.board,
             color: BLACK,
-            depth: depth
+            board: this.board,
+            color: BLACK,
+            depth: depth,
+            castlingRights: this.castlingRights
         });
     }
 
@@ -176,8 +185,7 @@ export class ChessBoard {
         }
 
         if (!move || move.length !== 4) {
-            console.error("AI returned invalid move:", move);
-            alert("Game Over or AI gave up!");
+            alert("You win!");
             return;
         }
 
@@ -191,8 +199,55 @@ export class ChessBoard {
 
         console.log(`AI moved: ${from} (${fromRank},${fromFile}) -> ${to} (${toRank},${toFile})`);
 
+        const piece = this.board[from];
+        const capturedPiece = this.board[to];
+
+        const isCastling = (piece === WK || piece === BK) && Math.abs(to - from) === 2;
+
         this.board[to] = this.board[from];
         this.board[from] = E;
+
+        if (isCastling) {
+            const row = Math.floor(from / 8);
+            if (to === from + 2) {
+                // Kingside
+                const rFrom = row * 8 + 7;
+                const rTo = row * 8 + 5;
+                this.board[rTo] = this.board[rFrom];
+                this.board[rFrom] = E;
+            } else {
+                // Queenside
+                const rFrom = row * 8 + 0;
+                const rTo = row * 8 + 3;
+                this.board[rTo] = this.board[rFrom];
+                this.board[rFrom] = E;
+            }
+        }
+
+        // Update Castling Rights (AI)
+        // 1. King moves
+        if (piece === WK) this.castlingRights &= ~(CASTLE_WK | CASTLE_WQ);
+        if (piece === BK) this.castlingRights &= ~(CASTLE_BK | CASTLE_BQ);
+
+        // 2. Rook moves
+        if (piece === WR) {
+            if (from === 56) this.castlingRights &= ~CASTLE_WQ;
+            if (from === 63) this.castlingRights &= ~CASTLE_WK;
+        }
+        if (piece === BR) {
+            if (from === 0) this.castlingRights &= ~CASTLE_BQ;
+            if (from === 7) this.castlingRights &= ~CASTLE_BK;
+        }
+
+        // 3. Rook captured
+        if (capturedPiece === WR) {
+            if (to === 56) this.castlingRights &= ~CASTLE_WQ;
+            if (to === 63) this.castlingRights &= ~CASTLE_WK;
+        }
+        if (capturedPiece === BR) {
+            if (to === 0) this.castlingRights &= ~CASTLE_BQ;
+            if (to === 7) this.castlingRights &= ~CASTLE_BK;
+        }
 
         this.turn = WHITE;
         this.isPlayerTurn = true;
@@ -222,8 +277,59 @@ export class ChessBoard {
             // Check if move is legal
             const legalMovesFromSelected = this.legalMoves.get(this.selectedSquare);
             if (legalMovesFromSelected && legalMovesFromSelected.has(index)) {
+                // Check for castling move (King moves 2 steps)
+                const piece = this.board[this.selectedSquare];
+                const capturedPiece = this.board[index];
+                const fromIdx = this.selectedSquare;
+                const toIdx = index;
+
+                const isCastling = (piece === WK || piece === BK) && Math.abs(toIdx - fromIdx) === 2;
+
+                // Move Piece
                 this.board[index] = this.board[this.selectedSquare];
                 this.board[this.selectedSquare] = E;
+
+                if (isCastling) {
+                    const row = Math.floor(fromIdx / 8);
+                    if (toIdx === fromIdx + 2) {
+                        // Kingside: Rook at 7 -> 5
+                        const rFrom = row * 8 + 7;
+                        const rTo = row * 8 + 5;
+                        this.board[rTo] = this.board[rFrom];
+                        this.board[rFrom] = E;
+                    } else {
+                        // Queenside: Rook at 0 -> 3
+                        const rFrom = row * 8 + 0;
+                        const rTo = row * 8 + 3;
+                        this.board[rTo] = this.board[rFrom];
+                        this.board[rFrom] = E;
+                    }
+                }
+
+                // Update Castling Rights
+                // 1. King moves
+                if (piece === WK) this.castlingRights &= ~(CASTLE_WK | CASTLE_WQ);
+                if (piece === BK) this.castlingRights &= ~(CASTLE_BK | CASTLE_BQ);
+
+                // 2. Rook moves
+                if (piece === WR) {
+                    if (fromIdx === 56) this.castlingRights &= ~CASTLE_WQ;
+                    if (fromIdx === 63) this.castlingRights &= ~CASTLE_WK;
+                }
+                if (piece === BR) {
+                    if (fromIdx === 0) this.castlingRights &= ~CASTLE_BQ;
+                    if (fromIdx === 7) this.castlingRights &= ~CASTLE_BK;
+                }
+
+                // 3. Rook captured
+                if (capturedPiece === WR) {
+                    if (index === 56) this.castlingRights &= ~CASTLE_WQ;
+                    if (index === 63) this.castlingRights &= ~CASTLE_WK;
+                }
+                if (capturedPiece === BR) {
+                    if (index === 0) this.castlingRights &= ~CASTLE_BQ;
+                    if (index === 7) this.castlingRights &= ~CASTLE_BK;
+                }
 
                 this.selectedSquare = null;
                 this.turn = BLACK;

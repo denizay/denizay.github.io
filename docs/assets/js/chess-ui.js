@@ -61,6 +61,36 @@ export class ChessBoard {
         this.worker = new Worker(new URL('./chess-worker.js', import.meta.url), { type: 'module' });
         this.worker.onmessage = (e) => this.handleWorkerMessage(e);
         this.timerInterval = null;
+
+        const restartBtn = document.getElementById('restart-btn');
+        if (restartBtn) {
+            restartBtn.onclick = () => this.resetGame();
+        }
+
+        this.resetGame();
+    }
+
+    resetGame() {
+        this.selectedSquare = null;
+        this.legalMoves = new Map();
+
+        this.turn = WHITE;
+        this.castlingRights = 15;
+        this.isPlayerTurn = true;
+
+        this.board = [
+            BR, BN, BB, BQ, BK, BB, BN, BR,
+            BP, BP, BP, BP, BP, BP, BP, BP,
+            E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E,
+            WP, WP, WP, WP, WP, WP, WP, WP,
+            WR, WN, WB, WQ, WK, WB, WN, WR
+        ];
+
+        this.updateLegalMoves();
+        this.render();
     }
 
     updateLegalMoves() {
@@ -136,15 +166,17 @@ export class ChessBoard {
         const depthInput = document.getElementById('ai-depth');
         const depth = depthInput ? parseInt(depthInput.value) : 3;
 
+        const pruningInput = document.getElementById('use-pruning');
+        const usePruning = pruningInput ? pruningInput.checked : true;
+
         this.startTimer();
 
         this.worker.postMessage({
             board: this.board,
             color: BLACK,
-            board: this.board,
-            color: BLACK,
             depth: depth,
-            castlingRights: this.castlingRights
+            castlingRights: this.castlingRights,
+            usePruning: usePruning
         });
     }
 

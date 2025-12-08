@@ -285,6 +285,7 @@ pub fn minimax(
     mut alpha: i32,
     mut beta: i32,
     castling_rights: u8,
+    use_pruning: bool,
 ) -> i32 {
     if depth == 0 {
         return evaluate_board(board);
@@ -310,19 +311,19 @@ pub fn minimax(
 
     for move_ in legal_moves {
         let (captured, new_rights) = make_move(board, move_, castling_rights);
-        let point = minimax(board, get_opponent(color), depth - 1, alpha, beta, new_rights);
+        let point = minimax(board, get_opponent(color), depth - 1, alpha, beta, new_rights, use_pruning);
         undo_move(board, move_, captured);
 
         if maximizing {
             best_point = best_point.max(point);
             alpha = alpha.max(point);
-            if beta <= alpha {
+            if use_pruning && beta <= alpha {
                 break;
             }
         } else {
             best_point = best_point.min(point);
             beta = beta.min(point);
-            if beta <= alpha {
+            if use_pruning && beta <= alpha {
                 break;
             }
         }
@@ -335,6 +336,7 @@ pub fn get_best_move(
     color: Color,
     depth: i32,
     castling_rights: u8,
+    use_pruning: bool,
 ) -> Option<((usize, usize), (usize, usize))> {
     // We need a mutable board for minimax
     let mut board_clone = *board;
@@ -359,6 +361,7 @@ pub fn get_best_move(
             alpha,
             beta,
             new_rights,
+            use_pruning,
         );
         points_w_moves.push((point, move_));
         undo_move(&mut board_clone, move_, captured);

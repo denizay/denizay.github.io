@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chess</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+    <nav>
+        <a href="/">← Back to Home</a>
+    </nav>
+
+    <article>
+        <h1>Chess Post WIP</h1>
+        <p>
+            Chess is cool,
+        </p>
+
+        <div class="controls">
+            <label for="ai-depth">AI Depth:</label>
+            <select id="ai-depth">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7" selected>7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+            </select>
+            <span id="ai-timer" style="margin-left: 10px; font-family: monospace;"></span>
+        </div>
+        <div id="my-board" class="chess-board"></div>
+        AI cooler.
+    </article>
+
+    <script type="module">
+        import { ChessBoard } from '../assets/js/chess-ui.js';
+        new ChessBoard('my-board', null);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+.chess-board {
+    display: grid;
+    /* Force exactly 8 columns AND 8 rows of equal size */
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+
+    /* Responsive sizing */
+    width: 100%;
+    max-width: 400px;
+    /* Cap the size so it doesn't get huge */
+
+    /* Magic property: This forces the container itself to always be a perfect square */
+    aspect-ratio: 1 / 1;
+
+    border: 5px solid #333;
+    user-select: none;
+    margin: 0 auto;
+    /* Center the board */
+}
+
+.square {
+    width: 100%;
+    height: 100%;
+
+    /* Center the piece perfectly */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Font adjustments */
+    font-size: 2.5rem;
+    /* Slightly smaller to ensure it fits */
+    line-height: 1;
+    /* Prevents font vertical spacing from pushing grid */
+    cursor: pointer;
+}
+
+/* Colors */
+.light {
+    background-color: #f0d9b5;
+    color: black;
+}
+
+.dark {
+    background-color: #b58863;
+    color: black;
+}
+
+.selected {
+    background-color: #7b61ff !important;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+    color: #333;
+}
+
+nav {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+nav a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #0070f3;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    background: #f9f9f9;
+}
+
+button {
+    background: #0070f3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0051a2;
+}
+
+input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

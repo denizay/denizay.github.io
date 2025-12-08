@@ -62,12 +62,13 @@ export function calculate_fib(n) {
 /**
  * @param {Int8Array} board
  * @param {number} color_int
+ * @param {number} castling_rights
  * @returns {Uint32Array}
  */
-export function get_all_legal_moves(board, color_int) {
+export function get_all_legal_moves(board, color_int, castling_rights) {
     const ptr0 = passArray8ToWasm0(board, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.get_all_legal_moves(ptr0, len0, color_int);
+    const ret = wasm.get_all_legal_moves(ptr0, len0, color_int, castling_rights);
     var v2 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
     wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
     return v2;
@@ -77,15 +78,30 @@ export function get_all_legal_moves(board, color_int) {
  * @param {Int8Array} board
  * @param {number} color_int
  * @param {number} depth
+ * @param {number} castling_rights
+ * @param {boolean} use_pruning
+ * @param {boolean} use_move_ordering
  * @returns {Uint32Array}
  */
-export function get_best_move(board, color_int, depth) {
+export function get_best_move(board, color_int, depth, castling_rights, use_pruning, use_move_ordering) {
     const ptr0 = passArray8ToWasm0(board, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.get_best_move(ptr0, len0, color_int, depth);
+    const ret = wasm.get_best_move(ptr0, len0, color_int, depth, castling_rights, use_pruning, use_move_ordering);
     var v2 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
     wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
     return v2;
+}
+
+/**
+ * @param {Int8Array} board
+ * @param {number} color_int
+ * @returns {boolean}
+ */
+export function is_in_check(board, color_int) {
+    const ptr0 = passArray8ToWasm0(board, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.is_in_check(ptr0, len0, color_int);
+    return ret !== 0;
 }
 
 const EXPECTED_RESPONSE_TYPES = new Set(['basic', 'cors', 'default']);

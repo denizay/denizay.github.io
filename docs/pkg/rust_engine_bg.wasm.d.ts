@@ -1,8 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export const get_all_legal_moves: (a: number, b: number, c: number) => [number, number];
-export const get_best_move: (a: number, b: number, c: number, d: number) => [number, number];
+export const get_all_legal_moves: (a: number, b: number, c: number, d: number) => [number, number];
+export const get_best_move: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number];
+export const is_in_check: (a: number, b: number, c: number) => number;
 export const calculate_fib: (a: number) => number;
 export const __wbindgen_exn_store: (a: number) => void;
 export const __externref_table_alloc: () => number;

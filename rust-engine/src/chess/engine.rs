@@ -27,6 +27,22 @@ pub fn get_opponent(color: Color) -> Color {
     }
 }
 
+pub fn score_move(board: &[[i8; 8]; 8], move_: ((usize, usize), (usize, usize))) -> i32 {
+    let ((from_r, from_f), (to_r, to_f)) = move_;
+    let move_piece = board[from_r][from_f];
+    let captured_piece = board[to_r][to_f];
+
+    if captured_piece != E {
+        // MVV-LVA: 10 * Victim Value - Attacker Value
+        let victim_val = get_piece_value(captured_piece).abs();
+        let attacker_val = get_piece_value(move_piece).abs();
+        
+        return 10 * victim_val - attacker_val;
+    }
+
+    0
+}
+
 pub fn make_move(
     board: &mut [[i8; 8]; 8],
     move_: ((usize, usize), (usize, usize)),
@@ -286,12 +302,21 @@ pub fn minimax(
     mut beta: i32,
     castling_rights: u8,
     use_pruning: bool,
+    use_move_ordering: bool,
 ) -> i32 {
     if depth == 0 {
         return evaluate_board(board);
     }
 
-    let legal_moves = get_legal_moves(board, color, castling_rights);
+    let mut legal_moves = get_legal_moves(board, color, castling_rights);
+    
+    if use_move_ordering {
+        legal_moves.sort_by(|a, b| {
+            let score_a = score_move(board, *a);
+            let score_b = score_move(board, *b);
+            score_b.cmp(&score_a) // Descending
+        });
+    }
 
     if legal_moves.is_empty() {
         if is_in_check(board, color) {
@@ -311,7 +336,7 @@ pub fn minimax(
 
     for move_ in legal_moves {
         let (captured, new_rights) = make_move(board, move_, castling_rights);
-        let point = minimax(board, get_opponent(color), depth - 1, alpha, beta, new_rights, use_pruning);
+        let point = minimax(board, get_opponent(color), depth - 1, alpha, beta, new_rights, use_pruning, use_move_ordering);
         undo_move(board, move_, captured);
 
         if maximizing {
@@ -337,10 +362,19 @@ pub fn get_best_move(
     depth: i32,
     castling_rights: u8,
     use_pruning: bool,
+    use_move_ordering: bool,
 ) -> Option<((usize, usize), (usize, usize))> {
     // We need a mutable board for minimax
     let mut board_clone = *board;
-    let legal_moves = get_legal_moves(&board_clone, color, castling_rights);
+    let mut legal_moves = get_legal_moves(&board_clone, color, castling_rights);
+
+    if use_move_ordering {
+        legal_moves.sort_by(|a, b| {
+            let score_a = score_move(board, *a);
+            let score_b = score_move(board, *b);
+            score_b.cmp(&score_a)
+        });
+    }
 
     if legal_moves.is_empty() {
         return None;
@@ -362,6 +396,7 @@ pub fn get_best_move(
             beta,
             new_rights,
             use_pruning,
+            use_move_ordering,
         );
         points_w_moves.push((point, move_));
         undo_move(&mut board_clone, move_, captured);

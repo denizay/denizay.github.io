@@ -169,6 +169,9 @@ export class ChessBoard {
         const pruningInput = document.getElementById('use-pruning');
         const usePruning = pruningInput ? pruningInput.checked : true;
 
+        const orderingInput = document.getElementById('use-ordering');
+        const useOrdering = orderingInput ? orderingInput.checked : true;
+
         this.startTimer();
 
         this.worker.postMessage({
@@ -176,7 +179,8 @@ export class ChessBoard {
             color: BLACK,
             depth: depth,
             castlingRights: this.castlingRights,
-            usePruning: usePruning
+            usePruning: usePruning,
+            useMoveOrdering: useOrdering
         });
     }
 

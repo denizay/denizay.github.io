@@ -260,7 +260,7 @@ fn get_king_legals(
     legal_moves
 }
 
-fn get_legal_moves(
+pub fn get_pseudo_legal_moves_for_piece(
     board: &[[i8; 8]; 8],
     color: Color,
     position: (usize, usize),
@@ -282,10 +282,10 @@ fn get_legal_moves(
     }
 }
 
-pub fn get_all_legal_moves(
+pub fn get_all_pseudo_legal_moves(
     board: &[[i8; 8]; 8],
     color: Color,
-) -> Vec<((usize, usize), (usize, usize))> {
+    ) -> Vec<((usize, usize), (usize, usize))> {
     let mut all_legal_moves = Vec::new();
     for rank in 0..8 {
         for file in 0..8 {
@@ -297,7 +297,7 @@ pub fn get_all_legal_moves(
             if piece_color != color {
                 continue;
             }
-            let legal_moves = get_legal_moves(board, color, (rank, file));
+            let legal_moves = get_pseudo_legal_moves_for_piece(board, color, (rank, file));
             for legal_move in legal_moves {
                 all_legal_moves.push(((rank, file), legal_move));
             }

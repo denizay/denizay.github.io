@@ -1,4 +1,6 @@
-use crate::chess::pieces::{get_all_legal_moves, get_piece_value, Color, BK, E, WK};
+use crate::chess::pieces::{
+    get_all_pseudo_legal_moves, get_piece_value, get_pseudo_legal_moves_for_piece, Color, BK, E, WK,
+};
 use rand::prelude::IndexedRandom;
 
 pub fn evaluate_board(board: &[[i8; 8]; 8]) -> i32 {
@@ -32,27 +34,75 @@ pub fn undo_move(board: &mut [[i8; 8]; 8], move_: ((usize, usize), (usize, usize
     board[to_r][to_f] = captured;
 }
 
-pub fn check_game_finished(board: &[[i8; 8]; 8]) -> (bool, i32) {
-    let mut white_king_exists = false;
-    let mut black_king_exists = false;
+pub fn is_square_attacked(
+    board: &[[i8; 8]; 8],
+    position: (usize, usize),
+    attacker_color: Color,
+) -> bool {
+    for r in 0..8 {
+        for f in 0..8 {
+            let piece = board[r][f];
+            if piece == E {
+                continue;
+            }
+            // Check if piece belongs to attacker
+            let is_white = piece > 0;
+            let piece_color = if is_white { Color::White } else { Color::Black };
 
-    for row in board {
-        for &piece in row {
-            if piece == WK {
-                white_king_exists = true;
-            } else if piece == BK {
-                black_king_exists = true;
+            if piece_color == attacker_color {
+                let moves = get_pseudo_legal_moves_for_piece(board, attacker_color, (r, f));
+                if moves.contains(&position) {
+                    return true;
+                }
             }
         }
     }
+    false
+}
 
-    if !white_king_exists {
-        return (true, -10000);
+pub fn is_in_check(board: &[[i8; 8]; 8], color: Color) -> bool {
+    let king_val = match color {
+        Color::White => WK,
+        Color::Black => BK,
+    };
+
+    let mut king_pos = None;
+    for r in 0..8 {
+        for f in 0..8 {
+            if board[r][f] == king_val {
+                king_pos = Some((r, f));
+                break;
+            }
+        }
+        if king_pos.is_some() {
+            break;
+        }
     }
-    if !black_king_exists {
-        return (true, 10000);
+
+    match king_pos {
+        Some(pos) => is_square_attacked(board, pos, get_opponent(color)),
+        None => true, // Should not happen, but if no king, yes we are in "check"?
     }
-    (false, 0)
+}
+
+pub fn get_legal_moves(
+    board: &[[i8; 8]; 8],
+    color: Color,
+) -> Vec<((usize, usize), (usize, usize))> {
+    let pseudo_moves = get_all_pseudo_legal_moves(board, color);
+    let mut legal_moves = Vec::new();
+
+    let mut board_clone = *board;
+
+    for move_ in pseudo_moves {
+        let captured = make_move(&mut board_clone, move_);
+        if !is_in_check(&board_clone, color) {
+            legal_moves.push(move_);
+        }
+        undo_move(&mut board_clone, move_, captured);
+    }
+
+    legal_moves
 }
 
 fn is_maximizing(color: Color) -> bool {
@@ -66,26 +116,28 @@ pub fn minimax(
     mut alpha: i32,
     mut beta: i32,
 ) -> i32 {
-    let (finished, score) = check_game_finished(board);
-    if finished {
-        return score;
-    }
     if depth == 0 {
         return evaluate_board(board);
     }
 
-    let legal_moves_raw = get_all_legal_moves(board, color);
+    let legal_moves = get_legal_moves(board, color);
 
-    if legal_moves_raw.is_empty() {
-        // Checkmate check needed.
-        // Will return evaluate_board for now.
-        return evaluate_board(board);
+    if legal_moves.is_empty() {
+        if is_in_check(board, color) {
+            if color == Color::White {
+                return -10000 - depth;
+            } else {
+                return 10000 + depth;
+            }
+        }
+        // Stalemate
+        return 0;
     }
 
     let maximizing = is_maximizing(color);
     let mut best_point = if maximizing { i32::MIN } else { i32::MAX };
 
-    for move_ in legal_moves_raw {
+    for move_ in legal_moves {
         let captured = make_move(board, move_);
         let point = minimax(board, get_opponent(color), depth - 1, alpha, beta);
         undo_move(board, move_, captured);
@@ -114,7 +166,7 @@ pub fn get_best_move(
 ) -> Option<((usize, usize), (usize, usize))> {
     // We need a mutable board for minimax
     let mut board_clone = *board;
-    let legal_moves = get_all_legal_moves(&board_clone, color);
+    let legal_moves = get_legal_moves(&board_clone, color);
 
     if legal_moves.is_empty() {
         return None;

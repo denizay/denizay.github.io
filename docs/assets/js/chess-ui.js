@@ -1,4 +1,4 @@
-import init, { get_all_legal_moves } from '../../pkg/rust_engine.js';
+import init, { get_all_legal_moves, is_in_check } from '../../pkg/rust_engine.js';
 
 await init();
 
@@ -80,6 +80,15 @@ export class ChessBoard {
             }
             this.legalMoves.get(fromIdx).add(toIdx);
         }
+        if (this.legalMoves.size === 0) {
+            if (is_in_check(this.board, this.turn)) {
+                alert(`Checkmate! ${this.turn === WHITE ? "Black" : "White"} wins!`);
+            } else {
+                alert("Stalemate! Game Draw.");
+            }
+            this.isPlayerTurn = false; // Disable moves
+        }
+
         console.log("Legal moves updated:", this.legalMoves);
     }
 

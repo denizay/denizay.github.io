@@ -102,3 +102,35 @@ input {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
+
+blockquote {
+    max-width: 50%;
+    margin: 30px auto;
+
+    font-style: italic;
+    color: #555;
+
+}
+
+/* This rule only applies if the screen is narrower than 768px (Phones & Tablets) */
+@media (max-width: 768px) {
+    blockquote {
+        max-width: 80%;
+    }
+}
+
+/* Specific style for the source/author text */
+blockquote .source {
+    display: block;
+    /* Forces it to its own line */
+    margin-top: 10px;
+    text-align: right;
+    /* Aligns to the right */
+
+    font-style: normal;
+    /* Removes italics for contrast */
+    font-size: 0.9rem;
+    /* Slightly smaller text */
+    color: #888;
+}

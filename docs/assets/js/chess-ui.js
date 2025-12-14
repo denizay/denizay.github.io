@@ -71,6 +71,16 @@ export class ChessBoard {
     }
 
     resetGame() {
+        // 1. Stop any running timer
+        this.stopTimer();
+
+        // 2. Reset the stats UI to defaults
+        const timerDisplay = document.getElementById('ai-timer');
+        const evalDisplay = document.getElementById('ai-evals');
+        if (timerDisplay) timerDisplay.innerText = '0.00s';
+        if (evalDisplay) evalDisplay.innerText = '0 evals';
+
+        // 3. Reset Game Logic
         this.selectedSquare = null;
         this.legalMoves = new Map();
 
@@ -174,6 +184,9 @@ export class ChessBoard {
 
         this.startTimer();
 
+        const evalDisplay = document.getElementById('ai-evals');
+        if (evalDisplay) evalDisplay.innerText = '';
+
         this.worker.postMessage({
             board: this.board,
             color: BLACK,
@@ -220,7 +233,7 @@ export class ChessBoard {
             }
         }
 
-        if (!move || move.length !== 4) {
+        if (!move || move.length < 4) {
             alert("You win!");
             return;
         }
@@ -232,6 +245,14 @@ export class ChessBoard {
 
         const from = fromRank * 8 + fromFile;
         const to = toRank * 8 + toFile;
+
+        if (move.length > 4) {
+            const evalCount = move[4];
+            const evalDisplay = document.getElementById('ai-evals');
+            if (evalDisplay) {
+                evalDisplay.innerText = `Evaluated: ${evalCount}`;
+            }
+        }
 
         console.log(`AI moved: ${from} (${fromRank},${fromFile}) -> ${to} (${toRank},${toFile})`);
 

@@ -134,3 +134,342 @@ blockquote .source {
     /* Slightly smaller text */
     color: #888;
 }
+
+/* --- Modern Controls Styling --- */
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.settings-row,
+.actions-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Custom Select Dropdown */
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.select-wrapper select {
+    appearance: none;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 6px 30px 6px 12px;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.select-wrapper select:hover {
+    border-color: #0070f3;
+}
+
+/* Custom arrow for select */
+.select-wrapper::after {
+    content: "▼";
+    font-size: 0.6rem;
+    color: #888;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Toggle Switches */
+.toggle-control {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.toggle-control input {
+    display: none;
+    /* Hide default checkbox */
+}
+
+.toggle-slider {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-control input:checked+.toggle-slider {
+    background-color: #0070f3;
+}
+
+.toggle-control input:checked+.toggle-slider:before {
+    transform: translateX(16px);
+}
+
+/* Typography for labels */
+.label-text {
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background: #0070f3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 112, 243, 0.2);
+    display: flex;
+    align-items: center;
+}
+
+.btn-primary:hover {
+    background: #0051a2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 112, 243, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Stats Pills (Timer & Evals) */
+.stats-container {
+    display: flex;
+    gap: 8px;
+}
+
+.stat-pill {
+    background: #f0f0f0;
+    color: #444;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.8rem;
+    border: 1px solid #e0e0e0;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Mobile Adjustment */
+@media (max-width: 600px) {
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actions-row {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+}
+
+
+/* --- Special Styling for Names --- */
+.person-name {
+    font-weight: 600;
+}
+
+/* --- Math Formula Styling --- */
+.math-formula {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 1.3rem;
+    /* Slightly larger than normal text */
+    text-align: center;
+    background-color: #f8f9fa;
+    /* Light grey background for contrast */
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+
+    /* Math styling nuances */
+    font-style: italic;
+    color: #333;
+    overflow-x: auto;
+    /* Allows scrolling on small mobile screens if needed */
+    white-space: nowrap;
+    /* Keeps the formula on one line if possible */
+}
+
+/* Optional: Make the numbers and symbols non-italic for "proper" notation, 
+   though usually not strictly necessary for a blog */
+.math-formula span {
+    font-style: normal;
+}
+
+
+/* --- Accordion Code Block (Card Style) --- */
+.code-accordion {
+    /* Match the .card class exactly */
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    /* Matches .card radius */
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.accordion-header {
+    background-color: transparent;
+    /* Blends with the container */
+    color: #333;
+    padding: 10px 20px;
+    /* Slightly tighter padding */
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    /* Subtle text size */
+    font-weight: 600;
+    border-bottom: 1px solid transparent;
+    /* Hidden by default */
+    transition: background-color 0.2s;
+}
+
+.accordion-header:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    /* Very subtle hover effect */
+}
+
+/* When open, add a separator line between header and code */
+.accordion-header.active {
+    border-bottom: 1px solid #ddd;
+    background-color: white;
+}
+
+.accordion-icon {
+    font-size: 1rem;
+    color: #888;
+    /* Greyed out icon so it's not distracting */
+    transition: transform 0.3s ease;
+}
+
+.accordion-header.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    display: none;
+}
+
+.accordion-content.open {
+    display: block;
+}
+
+/* Code area styling */
+.accordion-content pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background-color: #f9f9f9 !important;
+    /* White bg for code to contrast slightly with the grey card */
+
+    /* Font adjustments */
+    font-size: 0.8rem !important;
+    /* Much smaller font as requested */
+    line-height: 1.5;
+    padding: 20px !important;
+}
+
+
+/* Add this to style.css */
+.blog-img {
+    /* CHANGED: Limit the image to 500px (or whatever size you prefer) */
+    max-width: 500px;
+
+    max-width: 300px;
+
+    /* ADDED: Ensures it fills the space on small mobile screens */
+    width: 100%;
+
+    height: auto;
+    /* Maintains aspect ratio */
+    display: block;
+    /* Removes bottom whitespace */
+    margin: 20px auto;
+    /* Centers the image with some vertical spacing */
+    border-radius: 8px;
+    /* Optional: matches your card border-radius */
+}
+
+/* Optional: Style the caption if you use Option B */
+figure figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+
+/* Special style for technical quotes from the paper */
+blockquote.paper-excerpt {
+    max-width: 100%;
+    /* Override the default 50% width so the list fits */
+    font-style: normal;
+    /* Keep text upright (not italic) for readability */
+    color: #333;
+    /* Darker text for readability */
+    background-color: #f1f5f9;
+    /* Subtle blue-grey background */
+    border-left: 5px solid #0070f3;
+    /* The blue "Quote" bar */
+    padding: 20px 25px;
+    /* Inner spacing */
+    margin: 30px 0;
+    /* Outer spacing */
+    border-radius: 0 8px 8px 0;
+    /* Rounded corners on the right */
+}
+
+/* Clean up the list inside the quote */
+.paper-excerpt .program-list {
+    list-style-type: none;
+    /* Remove default bullets */
+    padding-left: 0;
+    margin: 15px 0;
+}
+
+.paper-excerpt .program-list li {
+    margin-bottom: 8px;
+    padding-left: 10px;
+}

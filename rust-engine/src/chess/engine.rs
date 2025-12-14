@@ -303,8 +303,10 @@ pub fn minimax(
     castling_rights: u8,
     use_pruning: bool,
     use_move_ordering: bool,
+    eval_count: &mut u32,
 ) -> i32 {
     if depth == 0 {
+        *eval_count += 1;
         return evaluate_board(board);
     }
 
@@ -336,7 +338,7 @@ pub fn minimax(
 
     for move_ in legal_moves {
         let (captured, new_rights) = make_move(board, move_, castling_rights);
-        let point = minimax(board, get_opponent(color), depth - 1, alpha, beta, new_rights, use_pruning, use_move_ordering);
+        let point = minimax(board, get_opponent(color), depth - 1, alpha, beta, new_rights, use_pruning, use_move_ordering, eval_count);
         undo_move(board, move_, captured);
 
         if maximizing {
@@ -363,7 +365,7 @@ pub fn get_best_move(
     castling_rights: u8,
     use_pruning: bool,
     use_move_ordering: bool,
-) -> Option<((usize, usize), (usize, usize))> {
+) -> Option<((usize, usize), (usize, usize), u32)> {
     // We need a mutable board for minimax
     let mut board_clone = *board;
     let mut legal_moves = get_legal_moves(&board_clone, color, castling_rights);
@@ -387,6 +389,7 @@ pub fn get_best_move(
     let beta = 50000;
 
     for move_ in legal_moves {
+        let mut eval_count = 0;
         let (captured, new_rights) = make_move(&mut board_clone, move_, castling_rights);
         let point = minimax(
             &mut board_clone,
@@ -397,8 +400,9 @@ pub fn get_best_move(
             new_rights,
             use_pruning,
             use_move_ordering,
+            &mut eval_count,
         );
-        points_w_moves.push((point, move_));
+        points_w_moves.push((point, move_, eval_count));
         undo_move(&mut board_clone, move_, captured);
     }
 
@@ -406,19 +410,26 @@ pub fn get_best_move(
         return None;
     }
 
-    // Doing this stuff cuz wanna choose randomly between highest score moves
+    let mut rng = rand::rng();
+    
+    let total_evals: u32 = points_w_moves.iter().map(|(_, _, c)| c).sum();
+
     let best_score = if maximizing {
-        points_w_moves.iter().map(|(p, _)| *p).max().unwrap()
+        points_w_moves.iter().map(|(p, _, _)| *p).max().unwrap()
     } else {
-        points_w_moves.iter().map(|(p, _)| *p).min().unwrap()
+        points_w_moves.iter().map(|(p, _, _)| *p).min().unwrap()
     };
 
     let best_moves: Vec<_> = points_w_moves
         .into_iter()
-        .filter(|(p, _)| *p == best_score)
-        .map(|(_, m)| m)
+        .filter(|(p, _, _)| *p == best_score)
+        .map(|(_, m, _)| m)
         .collect();
 
-    let mut rng = rand::rng();
-    best_moves.choose(&mut rng).cloned()
+    let best_move = best_moves.choose(&mut rng).cloned();
+    
+    match best_move {
+        Some(m) => Some((m.0, m.1, total_evals)),
+        None => None,
+    }
 }

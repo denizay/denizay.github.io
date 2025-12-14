@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
     <nav>
-        <a href="/">← Back to Home</a>
+        <a href="/">Home</a>
     </nav>
 
     <article>
-        <h1>Chess Post WIP</h1>
         <blockquote>
             A game between two such mental giants,</br>
             Mr. A and Mr. B, would proceed as follows.</br>
@@ -29,51 +29,425 @@
                 Programming a Computer for Playing Chess,</br> Claude E. Shannon, 1950
             </span>
         </blockquote>
-
+        <h1>Chess Post WIP</h1>
         <p>
-            This program you can play against, is, in essence, the program.
+            In this post we will examine a chess program following a propsal by <span class="person-name">Claude E.
+                Shannon</span>. <br />
+            The main algorithm of the proposal, minimax, was first established by <span class="person-name">John Von
+                Neumann</span> in 1927.<br />
+            <span class="person-name">Shannon</span> proposed a program that uses minimax to play chess in 1950.<br />
+            <span class="person-name">Alan Turing</span> wrote an algorithm, Turochamp and played a match in 1952
+            executing it's step manually, using
+            himself as the computer.<br />
+            I would hope, to anyone who is interested in AI, seeing these names altogether would bring at least some
+            level
+            of excitement and hints at the rich history programs playing games have.
+            <!-- And I hope you would excuse me to indulge in talking about a. -->
         </p>
 
         <div class="card">
             <div class="controls">
-                <div class="control-group">
-                    <label for="ai-depth">Depth:</label>
-                    <select id="ai-depth">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5" selected>5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                    </select>
-                </div>
+                <div class="settings-row">
+                    <div class="control-group">
+                        <label for="ai-depth" class="label-text">Depth</label>
+                        <div class="select-wrapper">
+                            <select id="ai-depth">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5" selected>5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="control-group">
-                    <label for="use-pruning">
-                        <input type="checkbox" id="use-pruning" checked> Alpha-Beta Pruning
+                    <label class="toggle-control">
+                        <input type="checkbox" id="use-pruning" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="label-text">Pruning</span>
+                    </label>
+
+                    <label class="toggle-control">
+                        <input type="checkbox" id="use-ordering" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="label-text">Ordering</span>
                     </label>
                 </div>
 
-                <div class="control-group">
-                    <label for="use-ordering">
-                        <input type="checkbox" id="use-ordering" checked> Move Ordering
-                    </label>
+                <div class="actions-row">
+                    <button id="restart-btn" class="btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin-right:5px; transform: translateY(1px);">
+                            <path d="M23 4v6h-6"></path>
+                            <path d="M1 20v-6h6"></path>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        Restart
+                    </button>
+
+                    <div class="stats-container">
+                        <span id="ai-timer" class="stat-pill">0.00s</span>
+                        <span id="ai-evals" class="stat-pill">0 evals</span>
+                    </div>
                 </div>
-
-                <button id="restart-btn">Restart Game</button>
-
-                <span id="ai-timer" style="margin-left: 10px; font-family: monospace;"></span>
             </div>
             <div id="my-board" class="chess-board"></div>
         </div>
-        AI cooler.
+        The program uses minimax as it's core as propsed by Shannon.
+        The above implmementation also has alpha beta pruning and MVV-LVA move ordering to help with pruning branches
+        earlier.<br />
+        One can turn-off alpha-beta pruning to play against the exact program (Type A) Claude described.
+        Though only thing changing from the users perspective is increased thinking time without any change in the
+        programs strength.<br />
+
+        <h2>Evaluating a Chess board</h2>
+        If we had a exact function to evaluate a board position, we could order the legal moves by this functions result
+        and choose the first one to actually play. In any turn after running this function about 35 times we would know
+        the
+        best possible move. But there is no such function and probably never will be. Engines like AlphaZero use Deep
+        Neural Networks to
+        approximate such a function. Shannon's paper uses a much simpler one. Assigning values to each piece:
+        <div class="math-formula">
+            f(P) = 200(K-K') + 9(Q-Q') + 5(R-R') + 3(B-B' + N-N') + (P-P')
+        </div>
+        K, Q, R, B, N, P are the number of White kings, queens, rooks, bishops, knights and pawns on the board and the
+        primed letters are the same values for Black.
+
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">Setting up the board in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python"># Shannon propses to encode the pieces like this
+E = 0	# Empty
+
+WP = 1	# White Pawn
+WN = 2	# White Knight
+WB = 3	# White Bishop
+WR = 4	# White Rook
+WQ = 5	# White Queen
+WK = 6	# White King
+
+BP = -1	# Black Pawn
+BN = -2	# Black Knight
+BB = -3	# Black Bishop
+BR = -4	# Black Rook
+BQ = -5	# Black Queen
+BK = -6	# Black King
+
+def get_fresh_board():
+    board = [
+        [WR, WN, WB, WQ, WK, WB, WN, WR],
+        [WP, WP, WP, WP, WP, WP, WP, WP],
+        [E,  E,  E,  E,  E,  E,  E,  E],
+        [E,  E,  E,  E,  E,  E,  E,  E],
+        [E,  E,  E,  E,  E,  E,  E,  E],
+        [E,  E,  E,  E,  E,  E,  E,  E],
+        [BP, BP, BP, BP, BP, BP, BP, BP],
+        [BR, BN, BB, BQ, BK, BB, BN, BR]
+    ]
+    return board</code></pre>
+            </div>
+        </div>
+
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">Evaluating the board in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python">PIECE2POINT = {
+    WP: 1, WN: 3, WB: 3, WR: 5, WQ: 9, WK: 200,
+    BP: -1, BN: -3, BB: -3, BR: -5, BQ: -9, BK: -200,
+    E: 0
+}
+
+def evaluate_board(board):
+    total_point = 0
+    for row in board:
+        for piece in row:
+            total_point += PIECE2POINT[piece]
+    return total_point</code></pre>
+            </div>
+        </div>
+
+        White players aim is to "Maximize" this score and the Black players aim is to "Minimize".
+
+        <h2>Using an evaluation function to choose a move</h2>
+        Having an approximate evaluation function, we can now start to make moves that are not completely random.
+        Let's assume we are the White player, the simplest way to use this function to play choose a move is to get the
+        score for all possible 35ish states
+        after playing out our legal moves and choosing the move with highest score. If you set the depth on the engine
+        above to 1
+        this is the program you will be playing against, though it will be a very bad opponent.
+        With this setting
+        <!-- Pseudo code maybe ? or Python ? -->
+        If we were to make this opponent only a slightly better opponent, for any legal move we have instead of running
+        the evaluation function directly
+        we could consider all the possible answers the Black player can have and then run the evaluation on the
+        opponents
+        answers. Since the Black player's aim is to Minimize the score, we should assume the opponent will choose the
+        move with the lowest score as a response to our candidate legal move, so we can assign the minimum of these
+        values as our evaluation for our move.
+        If you set the depth to 2 this is the program you will be playing against.
+        With this setting we are running our evaluation function on around 35**2 moves. You can check this number on the
+        engine above.<br />
+        The number of legal moves at any turn is different, it starts with 20 moves, increases in the middle game and
+        starts going down as we take pieces off the board or do checks.
+        Turn off Pruning on the engine for now to see the number we are expecting with this method.
+
+        <figure>
+            <img src="../assets/images/fig-1.png" alt="Claude Shannon playing chess" class="blog-img">
+            <figcaption>Fig 1: Minimax with depth 2</figcaption>
+        </figure>
+
+        We can keep increasing the depth for this method as much as we want and get more accurate evaluations.
+        But the amount of board positions we will have to evaluate will increase exponentially as well. You can, again
+        with prunign turned off,
+        try playing against with different depth setting and see the increase in time yourself.
+
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">Minimax in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python"># get_legal_moves returns an array of moves
+# each move is a tuple of (current position, target position, piece)
+# each position is a tuple if integers representing rank and file
+# make_move makes a move on the board and 
+# returns a piece if any piece was capured
+# undo_move takes the move back and puts back the captured piece
+
+def minimax(board, color, depth):
+    if depth == 0:
+        return evaluate_board(board)
+    best_point = float("-inf") if color == "white" else float("inf")
+    legal_moves = get_legal_moves(board, color)
+    for move in legal_moves:
+        prev_piece = make_move(board, move)
+        point = minimax(board, get_opponent(color), depth - 1)
+        undo_move(board, move, prev_piece)
+        if color == "white:
+            best_point = max(best_point, point)
+        else:
+            best_point = min(best_point, point)
+    return best_point</code></pre>
+            </div>
+        </div>
+
+
+        <h2>Type A and Type B programs</h2>
+        <span class="person-name">Shannon</span> divides the types of programs that can play chess into two classes,
+        called Type A and Type B.
+        <br />
+        <br />
+        Type A programs are programs that look at every possible sequence up to a certain depth and choose the best
+        move.
+        If the game of chess was techniqually to be called "solved", this is the type of programs we would need.
+        In chess there are 35 legal moves per turn on average, this is our branching factor. Assuming an average of 40
+        turns (40 moves per player) it would be
+        around 35<sup>80</sup> ≈ 10<sup>120</sup> positions.
+        In the best case scenerio alpha-beta pruning reduces the branching factor to the square root of the original
+        number so (35<sup>0.5</sup>)<sup>80</sup> = 35 <sup>40</sup> ≈ 10<sup>61</sup> board positions to evaluate.
+        If we calculated on an extremely optimistic speed of 10<sup>9</sup> board positions per second, we would still
+        need 10<sup>52</sup> seconds to evaluate every possible position.
+        World will be expected to be engulfed by the sun well within 10<sup>10</sup> years, the universe is
+        expected to be dominated by black holes within 10<sup>40</sup> years, entering The
+        Black Hole Era, so to be able to "solve" chess, we would need to make a computer that can withstand the decay of
+        universe and get it's energy from the Hawking Radiation from these black holes.
+        <br />
+        <br />
+        According to Shannons talks about two improvements to the strategy above: <br />
+        1 ) Examine variations out as far as a quasi-stability has been established.<br />
+        Meaning don't stop the exploring the branches in the middle of a trading sequence.<br />
+        2 ) Select the variations to be explored so to not waste time in pointless variations.<br />
+        This would require a policy function which ranks the moves to be explored.<br />
+        Type B programs are much closer to todays best engines like AlphaZero where a policy function is used to select
+        the vartions to be checked as well as a value function.
+
+        <h2>A type A program </h2>
+
+        <blockquote class="paper-excerpt">
+            <p>
+                The complete program for a type A strategy consists of nine sub-programs
+                which we designate T<sub>0</sub>, <sub>1</sub>, ..., T<sub>8</sub> and a master program T<sub>9</sub>.
+                The basic functions of these programs are as follows:
+            </p>
+            <ul class="program-list">
+                <li><strong>T<sub>0</sub></strong> – Makes move <em>(a, b, c)</em> in position P to obtain the resulting
+                    position.</li>
+                <li><strong>T<sub>1</sub></strong> – Makes a list of the possible moves of a pawn at square <em>(x,
+                        y)</em> in position P.</li>
+                <li><strong>T<sub>2</sub>, ..., T<sub>6</sub></strong> – Similarly for other types of pieces: knight,
+                    bishop, rook, queen and king.</li>
+                <li><strong>T<sub>7</sub></strong> – Makes list of all possible moves in a given position.</li>
+                <li><strong>T<sub>8</sub></strong> – Calculates the evaluating function <em>f(P)</em> for a given
+                    position P.</li>
+                <li><strong>T<sub>9</sub></strong> – Master program; performs maximizing and minimizing calculation to
+                    determine proper move.</li>
+            </ul>
+            <p>
+                With a given position P and a move <em>(a, b, c)</em> in the internal memory of the machine
+                it can make the move and obtain the resulting position by the following program T<sub>0</sub>.
+            </p>
+            <span class="source">Programming a Computer for Playing Chess, 1950</span>
+        </blockquote>
+
+        We have already implemented T<sub>8</sub> in the code block "Evaluating the board in Python".
+        Also in the code block "Minimax in Python" we referenced a function called make_move which is our
+        T<sub>0</sub>. T<sub>1</sub> is also relatively simple.
+
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">List moves for a Pawn in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python">def get_pawn_legals(board, color, position):
+    legal_moves = []
+    rank, file = position
+    if color == 'white':
+        if rank == 7:
+            return []
+        if board[rank+1][file] == 0:
+            # Pawn going 1 square forward
+            legal_moves.append((rank+1, file))
+        if rank == 1 and board[rank+1][file] == 0 and board[rank+2][file] == 0:
+            # Pawn going 2 squares if it's in the initial position
+            legal_moves.append((rank+2, file))
+        if file > 0 and board[rank+1][file-1] < 0:
+            # Capturing a piece on diagonal square
+            legal_moves.append((rank+1, file-1))
+        if file < 7 and board[rank+1][file+1] < 0:
+            # Other side diagonal
+            legal_moves.append((rank+1, file+1))
+    else:
+        if rank == 0:
+            return []
+        if board[rank-1][file] == 0:
+            legal_moves.append((rank-1, file))
+        if rank == 6 and board[rank-1][file] == 0 and board[rank-2][file] == 0:
+            legal_moves.append((rank-2, file))
+        if file > 0 and board[rank-1][file-1] > 0:
+            legal_moves.append((rank-1, file-1))
+        if file < 7 and board[rank-1][file+1] > 0:
+            legal_moves.append((rank-1, file+1))
+    return legal_moves</code></pre>
+            </div>
+        </div>
+
+        Basic implmementation for T<sub>2</sub>, ..., T<sub>6</sub> is on my repo
+        https://github.com/denizay/shannon-minimax-chess/blob/master/pieces.py.</br>
+
+        T<sub>7</sub> just uses the T<sub>1</sub>, ..., T<sub>6</sub> to make a list of all legal moves.
+
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">List all possible moves in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python">PIECE2FUNC = {
+        WP: get_pawn_legals,
+        BP: get_pawn_legals,
+        WN: get_knight_legals,
+        BN: get_knight_legals,
+        WB: get_bishop_legals,
+        BB: get_bishop_legals,
+        WR: get_rook_legals,
+        BR: get_rook_legals,
+        WQ: get_queen_legals,
+        BQ: get_queen_legals,
+        WK: get_king_legals,
+        BK: get_king_legals,
+}
+def get_legal_moves(board, color):
+    all_legal_moves = []
+    for rank in range(8):
+        for file in range(8):
+            piece = board[rank][file]
+            if piece == E:
+                continue
+            piece_color = "white" if piece > 0 else "black"
+            if piece_color != color:
+                continue
+            if piece in PIECE2FUNC:
+                legals = PIECE2FUNC[piece](board, color, (rank, file))
+                for legal in legals:
+                    all_legal_moves.append(((rank, file), legal, piece))
+
+    return all_legal_moves</code></pre>
+            </div>
+        </div>
+
+        And T<sub>9</sub> brings everything all together.
+
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">Master program in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python">def minimax_player(board, color, depth):
+    legal_moves = get_legal_moves(board, color)
+    points_w_moves = []
+    for move in legal_moves:
+        prev_piece = make_move(board, move)
+        point = minimax(board, get_opponent(color), depth - 1)
+        points_w_moves.append((point, move))
+        undo_move(board, move, prev_piece)
+    # choose_random_best_move just chooses a random move among the highest scored ones
+    best_point_w_move = choose_random_best_move(points_w_moves, color)
+    make_move(board, best_point_w_move[1])
+</code></pre>
+            </div>
+        </div>
+
+
+
+        <h2>Alpha-beta Pruning and MVV-LVA</h2>
+        Alpha-beta pruning speeds up search processes without loss of information.
+        (Experiments section)
+        According to An Analysis of Alpha-Beta Priming by Donald E. Knuth and Ronald W. Moore
+        John McCarthy came up with the idea in the famous 1956 conference.<br />
+        "McCarthy thought of the method during the Dartmouth Summer Research Conference on Artificial
+        Intelligence in
+        1956, when Bernstein described an early chess program which didn't use any sort of alpha-beta"
+        <br />
+        This is the very same conference for in whichs proposal the term "Artificial Intelligence" was first
+        used. The
+        proposal was was co-authored by John McCarthy, Marvin Minsky, Nathaniel Rochester and Claude Shannon.
+
+
+
     </article>
 
     <script type="module">
         import { ChessBoard } from '../assets/js/chess-ui.js';
         new ChessBoard('my-board', null);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script>
+        function toggleCode(headerElement) {
+            // Toggle the arrow rotation
+            headerElement.classList.toggle('active');
+
+            // Find the content div immediately following the header
+            const content = headerElement.nextElementSibling;
+
+            // Toggle visibility
+            content.classList.toggle('open');
+        }
+
+        // Attach to window so the HTML onclick works
+        window.toggleCode = toggleCode;
     </script>
 </body>
 

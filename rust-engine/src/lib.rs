@@ -60,8 +60,8 @@ pub fn get_best_move(board: &[i8], color_int: i32, depth: i32, castling_rights: 
     let best_move = chess::engine::get_best_move(&board_2d, color, depth, castling_rights, use_pruning, use_move_ordering);
 
     match best_move {
-        Some(((from_rank, from_file), (to_rank, to_file))) => {
-            vec![from_rank, from_file, to_rank, to_file]
+        Some(((from_rank, from_file), (to_rank, to_file), eval_count)) => {
+            vec![from_rank, from_file, to_rank, to_file, eval_count as usize]
         }
         None => vec![],
     }

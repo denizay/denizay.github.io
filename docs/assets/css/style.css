@@ -16,6 +16,7 @@
     user-select: none;
     margin: 0 auto;
     /* Center the board */
+    box-sizing: border-box;
 }
 
 .square {
@@ -28,11 +29,18 @@
     align-items: center;
 
     /* Font adjustments */
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 9vw, 3rem);
+    min-width: 0;
+    overflow: hidden;
+
     /* Slightly smaller to ensure it fits */
     line-height: 1;
     /* Prevents font vertical spacing from pushing grid */
     cursor: pointer;
+
+    color: transparent !important;
+    text-shadow: 0 0 0 black;
+    font-family: "Segoe UI Symbol", "DejaVu Sans", sans-serif;
 }
 
 /* Colors */

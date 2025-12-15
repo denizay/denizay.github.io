@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess</title>
+    <title>Making a Chess Engine with Claude E. Shannon</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
@@ -16,33 +16,36 @@
 
     <article>
         <blockquote>
-            A game between two such mental giants,</br>
-            Mr. A and Mr. B, would proceed as follows.</br>
-            They sit down at the chessboard, draw for colours,</br>
-            and then survey the pieces for a moment.</br>
-            Then either</br>
-            (1) Mr. A says, "I resign" or</br>
-            (2) Mr. B says, "I resign" or</br>
-            (3) Mr. A says, "I offer a draw,"</br>
-            and Mr. B replies, "I accept."</br>
+            A game between two such mental giants,<br>
+            Mr. A and Mr. B, would proceed as follows.<br>
+            They sit down at the chessboard, draw for colours,<br>
+            and then survey the pieces for a moment.<br>
+            Then either<br>
+            (1) Mr. A says, "I resign" or<br>
+            (2) Mr. B says, "I resign" or<br>
+            (3) Mr. A says, "I offer a draw,"<br>
+            and Mr. B replies, "I accept."<br>
             <span class="source">
-                Programming a Computer for Playing Chess,</br> Claude E. Shannon, 1950
+                Programming a Computer for Playing Chess, 1950<br> Claude E. Shannon
             </span>
         </blockquote>
-        <h1>Chess Post WIP</h1>
+        <h1>Making a Chess Engine with Claude E. Shannon</h1>
+        <p class="subtitle" style="margin-top: -15px; color: #666; font-style: italic;">
+            Exploring Minimax, Alpha-Beta Pruning, and MVV-LVA
+        </p>
         <p>
-            In this post we will examine a chess program following a propsal by <span class="person-name">Claude E.
-                Shannon</span>. <br />
-            The main algorithm of the proposal, minimax, was first established by <span class="person-name">John Von
-                Neumann</span> in 1927.<br />
-            <span class="person-name">Shannon</span> proposed a program that uses minimax to play chess in 1950.<br />
-            <span class="person-name">Alan Turing</span> wrote an algorithm, Turochamp and played a match in 1952
-            executing it's step manually, using
-            himself as the computer.<br />
-            I would hope, to anyone who is interested in AI, seeing these names altogether would bring at least some
-            level
-            of excitement and hints at the rich history programs playing games have.
-            <!-- And I hope you would excuse me to indulge in talking about a. -->
+            In this post, we will examine a chess program following a proposal by <span class="person-name">Claude E.
+                Shannon</span>.
+        </p>
+        <p>
+            The algorithm at the core of the program, minimax, was first established by <span class="person-name">John
+                Von
+                Neumann</span> in 1927.
+            <span class="person-name">Shannon</span> proposed a program that uses minimax to play chess in 1950.
+            <span class="person-name">Alan Turing</span> wrote an algorithm, Turochamp, and played a match in 1952,
+            executing its step manually, using himself as the computer.
+            I hope, to anyone who is interested in AI, seeing these names altogether would bring at least some
+            level of excitement, and hints at the rich history of programs playing games.
         </p>
 
         <div class="card">
@@ -97,25 +100,78 @@
             </div>
             <div id="my-board" class="chess-board"></div>
         </div>
-        The program uses minimax as it's core as propsed by Shannon.
-        The above implmementation also has alpha beta pruning and MVV-LVA move ordering to help with pruning branches
-        earlier.<br />
-        One can turn-off alpha-beta pruning to play against the exact program (Type A) Claude described.
-        Though only thing changing from the users perspective is increased thinking time without any change in the
-        programs strength.<br />
+
+        <p>
+            The program uses minimax as its core as proposed by Shannon.
+            The above implementation also has alpha-beta pruning, and MVV-LVA move ordering to help with pruning
+            branches
+            earlier.
+        </p>
+
+        <p>
+            You can turn off alpha-beta pruning to play against the exact program (Type A) Shannon described.
+            The only thing changing from the user's perspective is increased thinking time without any change in the
+            program's strength.
+        </p>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eaeaea;">
+
+        <p>
+            Code for this engine was written in Rust and compiled to WebAssembly for performance.
+            The Rust implementation can be found here:
+        </p>
+
+        <a href="https://github.com/denizay/denizay.github.io/tree/main/rust-engine/src/chess" target="_blank"
+            class="github-card">
+            <div class="github-icon">
+                <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+            </div>
+            <div class="github-content">
+                <span class="repo-name">denizay/denizay.github.io</span>
+                <span class="file-name">rust-engine/src/chess</span>
+            </div>
+            <div class="github-arrow">→</div>
+        </a>
+
+        <p style="margin-top: 30px;">
+            Throughout the post I'll show simple implementation of concepts mentioned in Python.
+            The complete Python implementation can be found here:
+        </p>
+
+        <a href="https://github.com/denizay/shannon-minimax-chess" target="_blank" class="github-card">
+            <div class="github-icon">
+                <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+            </div>
+            <div class="github-content">
+                <span class="repo-name">denizay/shannon-minimax-chess</span>
+                <!-- <span class="file-name">Python Implementation</span> -->
+            </div>
+            <div class="github-arrow">→</div>
+        </a>
+
 
         <h2>Evaluating a Chess board</h2>
-        If we had a exact function to evaluate a board position, we could order the legal moves by this functions result
-        and choose the first one to actually play. In any turn after running this function about 35 times we would know
-        the
-        best possible move. But there is no such function and probably never will be. Engines like AlphaZero use Deep
-        Neural Networks to
-        approximate such a function. Shannon's paper uses a much simpler one. Assigning values to each piece:
+        <p>
+            If we had an exact function to evaluate a board position, we could simply check the result for every legal
+            move, on average about 35, and choose the one with the highest score. However, no such computable function
+            exists today. While modern engines like AlphaZero use deep neural networks to approximate this, Shannon's
+            paper proposes a much simpler approach. Assigning a fixed value to each piece:
+        </p>
         <div class="math-formula">
             f(P) = 200(K-K') + 9(Q-Q') + 5(R-R') + 3(B-B' + N-N') + (P-P')
         </div>
-        K, Q, R, B, N, P are the number of White kings, queens, rooks, bishops, knights and pawns on the board and the
-        primed letters are the same values for Black.
+        <p>
+            K, Q, R, B, N, and P are the numbers of White kings, queens, rooks, bishops, knights, and pawns on the
+            board, and the primed letters are the same values for Black.
+        </p>
 
         <div class="code-accordion">
             <div class="accordion-header" onclick="toggleCode(this)">
@@ -123,7 +179,7 @@
                 <span class="accordion-icon">↓</span>
             </div>
             <div class="accordion-content">
-                <pre><code class="language-python"># Shannon propses to encode the pieces like this
+                <pre><code class="language-python"># Shannon proposes to encode the pieces like this
 E = 0	# Empty
 
 WP = 1	# White Pawn
@@ -155,7 +211,7 @@ def get_fresh_board():
             </div>
         </div>
 
-        <div class="code-accordion">
+        <div class="code-accordion" id="code-eval">
             <div class="accordion-header" onclick="toggleCode(this)">
                 <span class="accordion-title">Evaluating the board in Python</span>
                 <span class="accordion-icon">↓</span>
@@ -176,42 +232,46 @@ def evaluate_board(board):
             </div>
         </div>
 
-        White players aim is to "Maximize" this score and the Black players aim is to "Minimize".
+        <p>
+            White's aim is to <strong>maximize</strong> this score and the Black's is to <strong>minimize</strong>.
+        </p>
 
         <h2>Using an evaluation function to choose a move</h2>
-        Having an approximate evaluation function, we can now start to make moves that are not completely random.
-        Let's assume we are the White player, the simplest way to use this function to play choose a move is to get the
-        score for all possible 35ish states
-        after playing out our legal moves and choosing the move with highest score. If you set the depth on the engine
-        above to 1
-        this is the program you will be playing against, though it will be a very bad opponent.
-        With this setting
-        <!-- Pseudo code maybe ? or Python ? -->
-        If we were to make this opponent only a slightly better opponent, for any legal move we have instead of running
-        the evaluation function directly
-        we could consider all the possible answers the Black player can have and then run the evaluation on the
-        opponents
-        answers. Since the Black player's aim is to Minimize the score, we should assume the opponent will choose the
-        move with the lowest score as a response to our candidate legal move, so we can assign the minimum of these
-        values as our evaluation for our move.
-        If you set the depth to 2 this is the program you will be playing against.
-        With this setting we are running our evaluation function on around 35**2 moves. You can check this number on the
-        engine above.<br />
-        The number of legal moves at any turn is different, it starts with 20 moves, increases in the middle game and
-        starts going down as we take pieces off the board or do checks.
-        Turn off Pruning on the engine for now to see the number we are expecting with this method.
+        <p>
+            Having an approximate evaluation function, we can now start to make moves that are not completely random.
+        </p>
+        <p>
+            Let's assume we are the White player. The simplest way to use this function is to play out every legal
+            move, resulting in about 35 different positions, and choose the move that leads to the highest score. If you
+            set the depth on the engine above to 1, this is the program you will be playing against (though it will be a
+            very bad opponent).
+        </p>
+        <p>
+            To make this opponent slightly stronger, we can look one step deeper. Instead of evaluating the board
+            immediately after our move, we consider all possible responses available to Black.
+            Since Black aims to minimize the score, we must assume they will choose the response with the lowest value.
+            Therefore, we assign this minimum value as the actual score for our candidate move.
+        </p>
+        <p>
+            If you set the depth to 2, this is the program you will be playing against. With this setting, we are
+            running our evaluation function on around 35<sup>2</sup> moves.
+            You can verify this number in the engine above. The number of legal moves changes throughout the game: it
+            starts at 20, peaks during the middle game, and decreases as pieces are captured or when checks restrict the
+            available responses. Turn off "Pruning" for now to see the numbers we are expecting with this method.
+        </p>
 
         <figure>
-            <img src="../assets/images/fig-1.png" alt="Claude Shannon playing chess" class="blog-img">
+            <img src="../assets/images/fig-1.png" class="blog-img">
             <figcaption>Fig 1: Minimax with depth 2</figcaption>
         </figure>
 
-        We can keep increasing the depth for this method as much as we want and get more accurate evaluations.
-        But the amount of board positions we will have to evaluate will increase exponentially as well. You can, again
-        with prunign turned off,
-        try playing against with different depth setting and see the increase in time yourself.
+        <p>
+            We can keep increasing the depth for this method as much as we want and get more accurate evaluations.
+            But the number of board positions we will have to evaluate will increase exponentially as well. You can
+            try playing with different depth settings and see the increase in time yourself.
+        </p>
 
-        <div class="code-accordion">
+        <div class="code-accordion" id="code-minimax">
             <div class="accordion-header" onclick="toggleCode(this)">
                 <span class="accordion-title">Minimax in Python</span>
                 <span class="accordion-icon">↓</span>
@@ -233,7 +293,7 @@ def minimax(board, color, depth):
         prev_piece = make_move(board, move)
         point = minimax(board, get_opponent(color), depth - 1)
         undo_move(board, move, prev_piece)
-        if color == "white:
+        if color == "white":
             best_point = max(best_point, point)
         else:
             best_point = min(best_point, point)
@@ -243,33 +303,41 @@ def minimax(board, color, depth):
 
 
         <h2>Type A and Type B programs</h2>
-        <span class="person-name">Shannon</span> divides the types of programs that can play chess into two classes,
-        called Type A and Type B.
-        <br />
-        <br />
-        Type A programs are programs that look at every possible sequence up to a certain depth and choose the best
-        move.
-        If the game of chess was techniqually to be called "solved", this is the type of programs we would need.
-        In chess there are 35 legal moves per turn on average, this is our branching factor. Assuming an average of 40
-        turns (40 moves per player) it would be
-        around 35<sup>80</sup> ≈ 10<sup>120</sup> positions.
-        In the best case scenerio alpha-beta pruning reduces the branching factor to the square root of the original
-        number so (35<sup>0.5</sup>)<sup>80</sup> = 35 <sup>40</sup> ≈ 10<sup>61</sup> board positions to evaluate.
-        If we calculated on an extremely optimistic speed of 10<sup>9</sup> board positions per second, we would still
-        need 10<sup>52</sup> seconds to evaluate every possible position.
-        World will be expected to be engulfed by the sun well within 10<sup>10</sup> years, the universe is
-        expected to be dominated by black holes within 10<sup>40</sup> years, entering The
-        Black Hole Era, so to be able to "solve" chess, we would need to make a computer that can withstand the decay of
-        universe and get it's energy from the Hawking Radiation from these black holes.
-        <br />
-        <br />
-        According to Shannons talks about two improvements to the strategy above: <br />
-        1 ) Examine variations out as far as a quasi-stability has been established.<br />
-        Meaning don't stop the exploring the branches in the middle of a trading sequence.<br />
-        2 ) Select the variations to be explored so to not waste time in pointless variations.<br />
-        This would require a policy function which ranks the moves to be explored.<br />
-        Type B programs are much closer to todays best engines like AlphaZero where a policy function is used to select
-        the vartions to be checked as well as a value function.
+        <p>
+            <span class="person-name">Shannon</span> divides the types of programs that can play chess into two classes,
+            called Type A and Type B.
+        </p>
+        <p>
+            Type A programs are programs that look at every possible sequence up to a certain depth and choose the best
+            move. If the game of chess was technically to be called "solved", this is the type of program we would need.
+            In chess there are 35 legal moves per turn on average, this is our branching factor. Assuming an average of
+            40 turns (40 moves per player) it would be around 35<sup>80</sup> ≈ 10<sup>120</sup> positions.
+            In the best case scenario alpha-beta pruning reduces the branching factor to the square root of the original
+            number, so (35<sup>0.5</sup>)<sup>80</sup> = 35 <sup>40</sup> ≈ 10<sup>61</sup> board positions to
+            evaluate.
+        </p>
+        <p>
+            If we calculated on an extremely optimistic speed of 10<sup>9</sup> board positions per second, we would
+            still need 10<sup>52</sup> seconds to evaluate every possible position.
+            The world is expected to be engulfed by the sun well within 10<sup>10</sup> years, and the universe is
+            expected to be dominated by black holes within 10<sup>40</sup> years, entering The Black Hole Era. To be
+            able to "solve" chess, we would need to make a computer that can withstand the decay of the universe,
+            harvesting energy from the Hawking radiation of these black holes.
+        </p>
+
+        <p>
+            Shannons mentions two improvements to the strategy above:
+        </p>
+        <p style="padding-left: 10px;">
+            1 ) Examine variations out as far as a quasi-stability has been established.<br>
+            Meaning don't stop exploring the branches in the middle of a trading sequence.<br>
+            2 ) Select the variations to be explored so to not waste time in pointless variations.<br>
+            This would require a policy function which ranks the moves to be explored.
+        </p>
+
+        <p>
+            Shannon calls a strategy with these two improvements type B strategy.
+        </p>
 
         <h2>A type A program </h2>
 
@@ -299,13 +367,17 @@ def minimax(board, color, depth):
             <span class="source">Programming a Computer for Playing Chess, 1950</span>
         </blockquote>
 
-        We have already implemented T<sub>8</sub> in the code block "Evaluating the board in Python".
-        Also in the code block "Minimax in Python" we referenced a function called make_move which is our
-        T<sub>0</sub>. T<sub>1</sub> is also relatively simple.
+        <p>
+            We have already implemented T<sub>8</sub> in the code block <a href="#code-eval"
+                class="internal-code-link">"Evaluating the board in Python"</a>.
+            Also in the code block <a href="#code-minimax" class="internal-code-link">"Minimax in Python"</a> we
+            referenced
+            a function called `make_move` which is our T<sub>0</sub>. T<sub>1</sub> is also relatively simple.
+        </p>
 
         <div class="code-accordion">
             <div class="accordion-header" onclick="toggleCode(this)">
-                <span class="accordion-title">List moves for a Pawn in Python</span>
+                <span class="accordion-title">List moves for a pawn in Python</span>
                 <span class="accordion-icon">↓</span>
             </div>
             <div class="accordion-content">
@@ -342,10 +414,29 @@ def minimax(board, color, depth):
             </div>
         </div>
 
-        Basic implmementation for T<sub>2</sub>, ..., T<sub>6</sub> is on my repo
-        https://github.com/denizay/shannon-minimax-chess/blob/master/pieces.py.</br>
+        <p>
+            Basic implementation for T<sub>2</sub>, ..., T<sub>6</sub> can be found in the repository:
+        </p>
 
-        T<sub>7</sub> just uses the T<sub>1</sub>, ..., T<sub>6</sub> to make a list of all legal moves.
+        <a href="https://github.com/denizay/shannon-minimax-chess/blob/master/pieces.py" target="_blank"
+            class="github-card">
+            <div class="github-icon">
+                <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+            </div>
+            <div class="github-content">
+                <span class="repo-name">denizay/shannon-minimax-chess</span>
+                <span class="file-name">pieces.py</span>
+            </div>
+            <div class="github-arrow">→</div>
+        </a>
+
+        <p>
+            T<sub>7</sub> just uses the T<sub>1</sub>, ..., T<sub>6</sub> to make a list of all legal moves.
+        </p>
 
         <div class="code-accordion">
             <div class="accordion-header" onclick="toggleCode(this)">
@@ -386,7 +477,9 @@ def get_legal_moves(board, color):
             </div>
         </div>
 
-        And T<sub>9</sub> brings everything all together.
+        <p>
+            And T<sub>9</sub> brings everything all together.
+        </p>
 
         <div class="code-accordion">
             <div class="accordion-header" onclick="toggleCode(this)">
@@ -411,19 +504,126 @@ def get_legal_moves(board, color):
 
 
 
-        <h2>Alpha-beta Pruning and MVV-LVA</h2>
-        Alpha-beta pruning speeds up search processes without loss of information.
-        (Experiments section)
-        According to An Analysis of Alpha-Beta Priming by Donald E. Knuth and Ronald W. Moore
-        John McCarthy came up with the idea in the famous 1956 conference.<br />
-        "McCarthy thought of the method during the Dartmouth Summer Research Conference on Artificial
-        Intelligence in
-        1956, when Bernstein described an early chess program which didn't use any sort of alpha-beta"
-        <br />
-        This is the very same conference for in whichs proposal the term "Artificial Intelligence" was first
-        used. The
-        proposal was was co-authored by John McCarthy, Marvin Minsky, Nathaniel Rochester and Claude Shannon.
+        <h2>Alpha-beta Pruning</h2>
+        <p>
+            There is a way to help our Type A program by pruning some branches of the search tree without changing the
+            algorithm's strength.
+            If you look at Fig 1, we ran our evaluation function on all 9 terminal positions. However, if we assume we
+            evaluate these sequentially, up to bottom, we can see that some evaluations were unnecessary
+            because they could not possibly affect White's final decision.
+        </p>
+        <figure>
+            <img src="../assets/images/fig-2.png" class="blog-img">
+            <figcaption>Fig 2: Minimax, with alpha-beta pruning, with depth 2<br>Greyed out branches are not needed to
+                be evaluated.</figcaption>
+        </figure>
+        <p>
+            After evaluating the first possible move, White knows that the best it can do so far is +2.
+            When looking at the second White possible move, as soon as we see a score that is lower than +2, which is -2
+            in the figure above, we can stop looking at the rest of the Black moves.
+        </p>
+        <p>
+            Since Black plays to minimize the score, once they have the option to force the game to -2, the value of
+            this entire branch becomes at most -2. Because White can already guarantee a +2 from the
+            first move, White will never choose this second branch.
+        </p>
+        <p>
+            This means the +2 we found becomes our <strong>lower bound</strong>. Any time we see a response resulting in
+            a score lower than this lower bound, we can be sure that we will not go with that branch and we can stop
+            looking at the other sub-branches. As White keeps exploring, it could find branches resulting in scores
+            higher than +2, and we would increase the lower bound with these new values.
+        </p>
+        <p>
+            Just keeping track of a lower bound allows us to only prune one side's moves. We also need to keep track of
+            the <strong>upper bound</strong> of the score for Black. We keep track of these scores by adding two new
+            variables to our
+            existing minimax implementation. The lower bound is kept track in a variable called <strong>Alpha</strong>
+            and the upper bound in <strong>Beta</strong>.
+        </p>
 
+        <div class="code-accordion">
+            <div class="accordion-header" onclick="toggleCode(this)">
+                <span class="accordion-title">Minimax with alpha-beta pruning in Python</span>
+                <span class="accordion-icon">↓</span>
+            </div>
+            <div class="accordion-content">
+                <pre><code class="language-python">def minimax(board, color, depth, alpha=float("-inf"), beta=float("inf")):
+    if depth == 0:
+        return evaluate_board(board)
+    best_point = float("-inf") if color == "white" else float("inf")
+    legal_moves = get_legal_moves(board, color)
+    for move in legal_moves:
+        prev_piece = make_move(board, move)
+        point = minimax(board, get_opponent(color), depth - 1, alpha, beta)
+        undo_move(board, move, prev_piece)
+        if color == "white":
+            best_point = max(best_point, point)
+            alpha = max(alpha, point)
+            if beta <= alpha:
+                break
+        else:
+            best_point = min(best_point, point)
+            beta = min(beta, point)
+            if beta <= alpha:
+                break
+    return best_point</code></pre>
+            </div>
+        </div>
+
+        <p>
+            The idea was conceived by <strong>John McCarthy</strong> during the famous 1956 Dartmouth conference.
+        </p>
+        <blockquote class="paper-excerpt">
+            "McCarthy thought of the method during the Dartmouth Summer Research Conference on Artificial Intelligence
+            in 1956, when Bernstein described an early chess program which didn't use any sort of alpha-beta."
+            <span class="source">
+                An Analysis of Alpha-Beta Pruning, 1975<br> Donald E. Knuth, Ronald W. Mooree
+            </span>
+        </blockquote>
+        <p>
+            This is the very same conference where the term <strong>"Artificial Intelligence"</strong> was first coined.
+            The proposal for this historic gathering was co-authored by John McCarthy, Marvin Minsky, Nathaniel
+            Rochester, and <span class="person-name">Claude E. Shannon</span>.
+        </p>
+
+        <h3>MVV-LVA</h3>
+        <p>
+            The efficiency of alpha-beta pruning relies heavily on the order we examine moves. If we examine the
+            best moves first, we can prune the remaining bad branches much earlier.
+            Since we don't know the true "best" move yet, we use heuristics to guess which moves are likely to be good.
+        </p>
+        <p>
+            A popular method for sorting captures is called MVV-LVA(Most Valuable Victim - Least
+            Valuable Aggressor).
+        <ul class="heuristic-list">
+            <li>Most Valuable Victim (MVV): If we have a choice of pieces to capture, we look at
+                capturing the most valuable one first, for example: capturing a queen is likely to be better than
+                capturing a pawn.
+            </li>
+            <li>Least Valuable Aggressor (LVA): If we can capture a piece with multiple different
+                pieces, we start with the least valuable attacker, capturing with a pawn is likely to be safer than
+                capturing with a queen.</li>
+        </ul>
+        By prioritizing moves where we gain the most material while risking the least, we maximize the chances of
+        finding a "good enough" move early, which triggers a cutoff for the rest.
+        </p>
+
+        <figure>
+            <img src="../assets/images/fig-3.png" class="blog-img">
+            <figcaption>Fig 3: Minimax, with Alpha-Beta pruning, with MVV-LVA ordering, with depth 2</figcaption>
+        </figure>
+
+        <p>
+            To illustrate the impact of these improvements, we can look at the number of positions the engine above
+            evaluates to find a response to the opening move 1. e4 at depth 6:
+        <ul class="stats-list">
+            <li>Minimax: 309,392,030 positions</li>
+            <li>Alpha-Beta Pruning: 3,000,909 positions</li>
+            <li>With MVV-LVA Ordering: 1,175,609 positions</li>
+        </ul>
+        I would urge the reader to play around with different moves and depth settings to see the effects of these
+        improvements.
+        </p>
 
 
     </article>
@@ -448,6 +648,25 @@ def get_legal_moves(board, color):
 
         // Attach to window so the HTML onclick works
         window.toggleCode = toggleCode;
+
+        // Auto-scroll handler for internal code links
+        document.querySelectorAll('.internal-code-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // 1. Get the target ID
+                const targetId = link.getAttribute('href').substring(1);
+                const targetBlock = document.getElementById(targetId);
+
+                if (targetBlock) {
+                    // 2. Find the header inside that block
+                    const header = targetBlock.querySelector('.accordion-header');
+
+                    // 3. If it's not already open, toggle it
+                    if (header && !header.classList.contains('active')) {
+                        toggleCode(header);
+                    }
+                }
+            });
+        });
     </script>
 </body>
 

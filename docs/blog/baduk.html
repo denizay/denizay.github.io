@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go (바둑) model for 9x9 board</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- ONNX Runtime Web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/ort.min.js"></script>
+    <style>
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        #game-status {
+            margin-top: 10px;
+            font-weight: bold;
+            height: 24px;
+        }
+
+        .controls {
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-primary:hover {
+            background-color: #555;
+        }
+
+        .control-row {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/">Home</a>
+    </nav>
+
+    <article>
+        <h1>Go (바둑) model for 9x9 board</h1>
+        <p class="subtitle" style="margin-top: -15px; color: #666; font-style: italic;">
+            96 filters of 3x3 kernels, 18 residual blocks.
+        </p>
+        <div class="card">
+            <div class="game-container">
+                <div id="go-board"></div>
+                <div id="game-status">Initializing...</div>
+                <div class="controls">
+                    <div class="control-row">
+                        <label for="color-select">Play as:</label>
+                        <select id="color-select">
+                            <option value="white">White</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
+                    <div class="control-row">
+                        <button id="undo-btn" class="btn-primary">Undo</button>
+                        <button id="pass-btn" class="btn-primary">Pass</button>
+                        <button id="restart-btn" class="btn-primary">Restart Game</button>
+                    </div>
+                </div>
+                <!-- <div id="move-stats"
+                    style="margin-top: 15px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;"></div> -->
+
+
+                <div id="feature-maps-container" style="margin-top: 1px;">
+                    <h3>Policy Head Features (2x9x9) - Plane 1</h3>
+                    <div
+                        style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                        <div style="text-align: center;">
+                            <label>Heatmap</label><br>
+                            <canvas id="feat-1-std" width="200" height="200"></canvas>
+                        </div>
+                        <div style="text-align: center;">
+                            <label>Influence Glow</label><br>
+                            <canvas id="feat-1-glow" width="200" height="200"></canvas>
+                        </div>
+                        <div style="text-align: center;">
+                            <label>Hint Circle</label><br>
+                            <canvas id="feat-1-circle" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <h3>Policy Head Features (2x9x9) - Plane 2</h3>
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <div style="text-align: center;">
+                            <label>Heatmap</label><br>
+                            <canvas id="feat-2-std" width="200" height="200"></canvas>
+                        </div>
+                        <div style="text-align: center;">
+                            <label>Influence Glow</label><br>
+                            <canvas id="feat-2-glow" width="200" height="200"></canvas>
+                        </div>
+                        <div style="text-align: center;">
+                            <label>Hint Circle</label><br>
+                            <canvas id="feat-2-circle" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <h2>Network Interpretability</h2>
+                    <p>
+                        To see what the model is focusing on, I visualized the activations from the <strong>policy
+                            head's 2x9x9 intermediate layer</strong>.
+                        This is the final abstract representation of the board state right before the network flattens
+                        the data to calculate move probabilities.
+                    </p>
+                    <p style="font-size: 0.9em; color: #666;">
+                        <em>Above are the <strong>live internal features</strong> for the current board state,
+                            visualized in three different ways:
+                            <strong>Heatmap</strong> (raw activations), <strong>Influence Glow</strong> (smoothed
+                            attention), and
+                            <strong>Hint Circle</strong> (peak activation points).</em>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div style="margin-bottom: 30px;">
+            <p>
+                The model was trained on high-rank games from the GoQuest server using a <a
+                    href="https://www.eugeneweb.com/pipermail/computer-go/2015-December/008353.html" target="_blank"
+                    style="color: #0070f3; text-decoration: none;">publicly available dataset</a>.
+                Training was performed with mixed precision (bfloat16) and detailed logs are available in the <a
+                    href="https://wandb.ai/denizay333-gena/BadukDeepLearning-CNN-BiggerDataset/reports/9x9-Go-AI-Training-Runs--VmlldzoxNTQxNjU4NA?accessToken=aofm1cmc0sw4xuezr5h46533qmqcy3lvwgurju4r1s9e5f8imvrq7t4j20luwwgx"
+                    target="_blank" style="color: #0070f3; text-decoration: none;">WandB Report</a> (Run:
+                <em>20251218_182225</em>).
+            </p>
+
+            <h3>Architecture & Optimization</h3>
+            <ul style="line-height: 1.8; color: #333;">
+                <li><strong>Structure:</strong> 18 residual blocks with 96 filters (3x3 kernels).</li>
+                <li><strong>Policy Head:</strong> No search or rollouts are performed. The policy head transforms the
+                    board into 2x9x9 features, followed by a fully connected layer outputting 82 probabilities (81 moves
+                    + pass).</li>
+                <li><strong>Deployment:</strong> The model was exported to ONNX and compressed using <strong>dynamic
+                        quantization</strong> (unsigned 8-bit integers).</li>
+            </ul>
+
+            <h3>Performance Impact</h3>
+            <p>
+                Quantization made the model way lighter to deploy both in terms of size and speed, and didn't really
+                cost any accuracy:
+            </p>
+            <ul style="line-height: 1.8; color: #333;">
+                <li><strong>Model Size:</strong> Reduced from 12.1 MB &rarr; 3.2 MB.</li>
+                <li><strong>Val Set Move Prediction Top-1 Accuracy:</strong> 60.42% &rarr; 60.28%.</li>
+                <li><strong>Val Set Move Prediction Top-3 Accuracy:</strong> 86.71% &rarr; 86.70%.</li>
+            </ul>
+        </div>
+        The training code can be found here:
+        <a href="https://github.com/denizay/BadukDeepLearningModel" target="_blank" class="github-card">
+            <div class="github-icon">
+                <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+            </div>
+            <div class="github-content">
+                <span class="repo-name">denizay/BadukDeepLearningModel</span>
+            </div>
+            <div class="github-arrow">→</div>
+        </a>
+
+
+    </article>
+
+    <script type="module">
+        import { GoUI, BLACK, WHITE } from '../assets/js/go-ui.js';
+
+        let gameUI;
+
+        function initGame() {
+            const colorSelect = document.getElementById('color-select');
+            const playerColor = colorSelect.value === 'black' ? BLACK : WHITE;
+
+            document.getElementById('go-board').innerHTML = '';
+            gameUI = new GoUI('go-board', playerColor);
+        }
+
+        initGame();
+
+        document.getElementById('restart-btn').addEventListener('click', initGame);
+
+        document.getElementById('pass-btn').addEventListener('click', () => {
+            if (gameUI) gameUI.pass();
+        });
+
+        document.getElementById('undo-btn').addEventListener('click', () => {
+            if (gameUI) gameUI.undo();
+        });
+    </script>
+</body>
+
+</html>

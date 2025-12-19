@@ -558,4 +558,9 @@ html {
 .github-card:hover .github-arrow {
     transform: translateX(3px);
     color: white;
+}/* Add this to docs/assets/css/style.css */
+#go-board canvas {
+    max-width: 100%;
+    height: auto;
+    touch-action: none; /* Prevent scrolling when touching the board to play */
 }

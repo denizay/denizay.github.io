@@ -67,8 +67,14 @@ class GoUI {
         if (this.game.gameOver || this.isAIThinking || this.game.turn !== this.playerColor) return;
 
         const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left - this.padding;
-        const y = e.clientY - rect.top - this.padding;
+
+        // Calculate scale factors
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+
+        // Transform click coordinates to internal canvas coordinates
+        const x = (e.clientX - rect.left) * scaleX - this.padding;
+        const y = (e.clientY - rect.top) * scaleY - this.padding;
 
         const col = Math.round(x / this.tileSize);
         const row = Math.round(y / this.tileSize);
